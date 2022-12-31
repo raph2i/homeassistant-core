@@ -48,6 +48,7 @@ ATTR_UNIT = "unit"
 ATTR_URL = "url"
 ATTR_VALUE = "value"
 ATTR_SENSOR_LOCATION = "location"
+ATTR_EXT_PREFIX = "ext_"
 
 CONF_CONTACT = "contact"
 CONF_HUMIDITY = "humidity"
@@ -99,6 +100,7 @@ CONF_JABBER = "jabber"
 CONF_ISSUE_MAIL = "issue_mail"
 CONF_SPACE = "space"
 CONF_TEMPERATURE = "temperature"
+CONF_EXT = "ext"
 
 DATA_SPACEAPI = "data_spaceapi"
 DOMAIN = "spaceapi"
@@ -202,6 +204,10 @@ SENSOR_SCHEMA = vol.Schema(
     {vol.In(SENSOR_TYPES): [cv.entity_id], cv.string: [cv.entity_id]}
 )
 
+EXT_SCHEMA = vol.Schema(
+    {cv.string: [cv.string]}
+)
+
 CONFIG_SCHEMA = vol.Schema(
     {
         DOMAIN: vol.Schema(
@@ -227,6 +233,7 @@ CONFIG_SCHEMA = vol.Schema(
                 vol.Optional(CONF_RADIO_SHOW): vol.All(
                     cv.ensure_list, [RADIO_SHOW_SCHEMA]
                 ),
+                vol.Optional(CONF_EXT): EXT_SCHEMA,
             }
         )
     },
@@ -269,6 +276,7 @@ class APISpaceApiView(HomeAssistantView):
         hass = request.app["hass"]
         spaceapi = dict(hass.data[DATA_SPACEAPI])
         is_sensors = spaceapi.get("sensors")
+        is_ext = spaceapi.get("ext")
 
         location = {ATTR_LAT: hass.config.latitude, ATTR_LON: hass.config.longitude}
 
@@ -335,5 +343,8 @@ class APISpaceApiView(HomeAssistantView):
                     sensor_data = self.get_sensor_data(hass, spaceapi, sensor)
                     sensors[sensor_type].append(sensor_data)
             data[ATTR_SENSORS] = sensors
+        if is_ext is not None:
+            for ext_key in is_ext:
+                data[ATTR_EXT_PREFIX + ext_key] = spaceapi[CONF_EXT][ext_key]
 
         return self.json(data)

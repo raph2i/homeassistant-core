@@ -57,6 +57,10 @@ CONFIG = {
                 "end": "2019-09-02T12:00Z",
             }
         ],
+        "ext": {
+            "test_attribute": "test string",
+            "test_attribute_2": "test string 2"
+        }
     }
 }
 
@@ -132,7 +136,8 @@ async def test_spaceapi_get(hass, mock_client):
     assert data["radio_show"][0]["type"] == "ogg"
     assert data["radio_show"][0]["start"] == "2019-09-02T10:00Z"
     assert data["radio_show"][0]["end"] == "2019-09-02T12:00Z"
-
+    assert data["ext_test_attribute"] == "test string"
+    assert data["ext_test_attribute_2"] == "test string 2"
 
 async def test_spaceapi_state_get(hass, mock_client):
     """Test response if the state entity was set."""
