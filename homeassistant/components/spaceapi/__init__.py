@@ -338,7 +338,8 @@ class APISpaceApiView(HomeAssistantView):
         if is_sensors is not None:
             sensors = {}
             for sensor_type in is_sensors:
-                sensors[sensor_type] = []
+                if sensor_type != 'radiation'
+                    sensors[sensor_type] = []
                 for sensor in spaceapi["sensors"][sensor_type]:
                     sensor_data = self.get_sensor_data(hass, spaceapi, sensor)
                     sensors[sensor_type].append(sensor_data)
